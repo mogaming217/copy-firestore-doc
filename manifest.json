@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Copy Firestore Doc",
   "description": "One-click copy Firestore documents from the Firebase Console — JSON, Markdown, or AI-friendly text.",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "permissions": ["clipboardWrite", "activeTab", "storage"],
   "content_scripts": [
     {

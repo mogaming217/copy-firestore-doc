@@ -129,12 +129,15 @@ function buildArray(children: RawFieldInfo[]): FirestoreArray {
   return children.map((child) => convertValue(child));
 }
 
-/** ドキュメントのフィールドデータ全体を取得（JSON 値 + 型情報付き中間表現） */
-export function parseDocumentFields(): {
+/** ドキュメントのフィールドデータ全体を取得（JSON 値 + 型情報付き中間表現）
+ *  scope にフィールドサブパネル（f7e-panel）を渡すと、そのパネル内のみを対象にする。 */
+export function parseDocumentFields(scope?: Element): {
   data: FirestoreMap;
   raw: RawFieldInfo[];
 } | null {
-  const scrollContainer = document.querySelector(SELECTORS.scrollContainer);
+  const scrollContainer = scope
+    ? scope.querySelector(".scroll-container")
+    : document.querySelector(SELECTORS.scrollContainer);
   if (!scrollContainer) return null;
 
   const topLevelTrees = scrollContainer.querySelectorAll(
@@ -167,14 +170,16 @@ export function hasCollapsedFields(): boolean {
   return expandableNodes.length > 0;
 }
 
-/** 全ての折りたたまれたフィールドを展開する */
-export async function expandAllFields(): Promise<void> {
+/** 全ての折りたたまれたフィールドを展開する
+ *  scope を渡すと、そのパネル内の折りたたみフィールドだけを対象にする。 */
+export async function expandAllFields(scope?: Element): Promise<void> {
   const MAX_ITERATIONS = 50;
   let iteration = 0;
+  const root: ParentNode = scope ?? document;
 
   while (iteration < MAX_ITERATIONS) {
-    const collapsedButtons = document.querySelectorAll(
-      `f7e-fields-subpanel .database-node.expandable-type:not(.state-expanded) ${SELECTORS.expandCollapseButton}`
+    const collapsedButtons = root.querySelectorAll(
+      `.database-node.expandable-type:not(.state-expanded) ${SELECTORS.expandCollapseButton}`
     );
 
     if (collapsedButtons.length === 0) break;

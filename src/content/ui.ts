@@ -56,10 +56,18 @@ function showToast(message: string, isError = false): void {
 
 /** 全フィールドを展開してからコピー */
 async function copyData(): Promise<void> {
-  await expandAllFields();
+  // ボタンが挿入されているパネル（最も深い階層）を対象にする。
+  // これを指定しないと、親階層（例: groups）のパネルが拾われてしまう。
+  const targetPanel = getTargetFieldsPanel();
+  if (!targetPanel) {
+    showToast("No fields found", true);
+    return;
+  }
+
+  await expandAllFields(targetPanel);
   await new Promise((resolve) => setTimeout(resolve, 200));
 
-  const parsed = parseDocumentFields();
+  const parsed = parseDocumentFields(targetPanel);
   if (!parsed) {
     showToast("No fields found", true);
     return;
